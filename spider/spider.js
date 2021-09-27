@@ -2,7 +2,6 @@ const path = require('path')
 const moment = require('moment')
 const metadata = require('./metadata')
 const Spider = require('dhtspider')
-const MongoClient = require('mongodb').MongoClient
 const stringHash = require('string-hash')
 const { torrentdb } = require('./config')
 

@@ -1,7 +1,10 @@
 const MongoClient = require('mongodb').MongoClient
+require('dotenv').config()
 const muri = process.env.MONGO_URL
+
 let torrentdb = null
 let nextTorrentId = 0
+console.log(muri)
 MongoClient.connect(`${muri}/admin`, {useNewUrlParser: true}, (err, mconn) => {
     if(err) {
         console.error(err)
