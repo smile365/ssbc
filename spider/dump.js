@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient
 const crc32 = require('buffer-crc32')
-
-MongoClient.connect('mongodb://localhost:27017/admin', {useNewUrlParser: true}, (err, mconn) => {
+const { mongo_host } = require('./config')
+MongoClient.connect(`${mongo_host}/admin`, {useNewUrlParser: true}, (err, mconn) => {
     if(err) {
         console.error(err)
         process.exit(1)

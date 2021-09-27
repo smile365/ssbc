@@ -4,33 +4,18 @@ const metadata = require('./metadata')
 const Spider = require('dhtspider')
 const MongoClient = require('mongodb').MongoClient
 const stringHash = require('string-hash')
+const { torrentdb } = require('./config')
 
 const MAX_CONCURRENT = parseInt(process.env.MAX_CONCURRENT || 500)
 const MAX_HASH_BUFFER = 1000000
 
-let torrentdb = null
-let nextTorrentId = 0
-MongoClient.connect('mongodb://localhost:27017/admin', {useNewUrlParser: true}, (err, mconn) => {
-    if(err) {
-        console.error(err)
-        process.exit(1)
-    }
-    torrentdb = mconn.db('torrent')
-    torrentdb.collection('log').createIndex({date: 1, reqs: -1})
-    torrentdb.collection('log').createIndex({hash: 1})
-    torrentdb.collection('hash').createIndex({hash: 1}, {unique: 1})
-    torrentdb.collection('hash').find().sort({_id: -1}).limit(1).next((err, r) => {
-        nextTorrentId = (r && r._id || 0) + 1
-        console.log('Next torrent _id is', nextTorrentId, 'tableCaption', process.env.TABLE_CAPTION)
-    })
-})
 
 
 let n_reqs = 0, n_valid= 0, n_new = 0
 const visited = [], updates = [], downloading = {}
 const spider = new Spider({
     bootstraps: [
-        {address: 'router.bittorrent.com', port: 6881}, 
+        {address: 'router.bittorrent.com', port: 6881},
         {address: 'dht.transmissionbt.com', port: 6881},
         {address: 'router.utorrent.com', port: 6881}
     ],
@@ -56,11 +41,11 @@ spider.on('ensureHash', (hash, addr) => {
         torrentdb.collection('spider').updateOne({_id: today}, {
             $inc: {new_hashes: n_new, total_reqs: n_reqs, valid_reqs: n_valid}
             }, {upsert: true})
-        console.log('[Report]', new Date(), 
+        console.log('[Report]', new Date(),
             'n_reqs', n_reqs, 'n_valid', n_valid, 'n_new', n_new, 'n_downloading', Object.keys(downloading).length)
         n_new = n_reqs = n_valid = 0
     }
-    
+
     torrentdb.collection('hash').find({hash: hash}).limit(1).next((err, existingHash) => {
         if(existingHash) {
             n_valid += 1
@@ -72,8 +57,8 @@ spider.on('ensureHash', (hash, addr) => {
                 }
             })
         }else{
-            if(Object.keys(downloading).length >= MAX_CONCURRENT || downloading[hash]) 
-                return 
+            if(Object.keys(downloading).length >= MAX_CONCURRENT || downloading[hash])
+                return
             downloading[hash] = true
             //console.log('[CONNECT]', new Date(), addr, hash)
             metadata.downloadMetadata(hash, addr, (err, data) => {

@@ -7,7 +7,7 @@ const crypto = require('crypto')
 const bencode = require('bencode')
 const Iconv = require('iconv').Iconv
 
-function generateId() { 
+function generateId() {
     return crypto.createHash('sha1').update(`${(new Date).getTime()}:${Math.random()*99999}`).digest()
 }
 

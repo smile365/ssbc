@@ -6,6 +6,7 @@ const bodyParser = require('koa-bodyparser')
 const router = require('koa-router')()
 const mysql = require('promise-mysql')
 const crc32 = require('buffer-crc32')
+const { mongo_host, torrentdb } = require('./config')
 
 const punctuations = new RegExp(/。|，|,|！|…|!|《|》|<|>|\"|'|:|：|？|\?|、|\||“|”|‘|’|；|\\|—|_|=|（|）|·|\(|\)|　|\.|【|】|『|』|@|&|%|\^|\*|\+|\||<|>|~|`|\[|\]/, "g")
 const app = new Koa()
@@ -189,14 +190,13 @@ app.use(cookie.default())
 app.use(bodyParser())
 
 async function startServer() {
-    const client = await MongoClient.connect('mongodb://localhost:27017/admin', {useNewUrlParser: true})
-    app.context.torrentdb = client.db('torrent')
+    app.context.torrentdb = torrentdb
     app.context.mdb = await mysql.createPool({
         connectionLimit: 5,
-        host: 'localhost',
+        host: process.env.DB_HOST,
         user: 'root',
-        password: '',
-        port: 9306,
+        password: process.env.DB_PASSWD,
+        port: process.env.DB_PORT,
         multipleStatements: true
     })
     app.listen(process.env.PORT || 3000, async () => {
