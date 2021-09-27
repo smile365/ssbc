@@ -1,7 +1,6 @@
-const MongoClient = require('mongodb').MongoClient
 const crc32 = require('buffer-crc32')
-const { mongo_host } = require('./config')
-ß
+const { torrentdb } = require('./config')
+
 const catHash = {}
 function printHashes(docs, callback) {
     const d = []
@@ -25,12 +24,6 @@ function printHashes(docs, callback) {
 }
 
 
-MongoClient.connect(`${mongo_host}/admin`, {useNewUrlParser: true}, (err, mconn) => {
-    if(err) {
-        console.error(err)
-        process.exit(1)
-    }
-    const torrentdb = mconn.db('torrent')
 
     if(!process.env.DATE) {
         console.error('env DATE is empty')
@@ -68,5 +61,4 @@ MongoClient.connect(`${mongo_host}/admin`, {useNewUrlParser: true}, (err, mconn)
             mconn.close()
         })
     })
-})
 

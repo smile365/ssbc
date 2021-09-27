@@ -1,11 +1,5 @@
-const MongoClient = require('mongodb').MongoClient
-const { mongo_host } = require('./config')
-MongoClient.connect(`${mongo_host}/admin`, {useNewUrlParser: true}, (err, mconn) => {
-    if(err) {
-        console.error(err)
-        process.exit(1)
-    }
-    const torrentdb = mconn.db('torrent')
+
+const { torrentdb } = require('./config')
     const stream = torrentdb.collection('log').find({date: process.env.DATE}).stream()
     const d = []
     let ii = 0
@@ -45,5 +39,4 @@ MongoClient.connect(`${mongo_host}/admin`, {useNewUrlParser: true}, (err, mconn)
             })
         }
     })
-})
 

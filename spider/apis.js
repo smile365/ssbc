@@ -1,12 +1,12 @@
 const Koa = require('koa')
-const MongoClient = require('mongodb').MongoClient
 const moment = require('moment')
 const cookie = require('koa-cookie')
 const bodyParser = require('koa-bodyparser')
 const router = require('koa-router')()
 const mysql = require('promise-mysql')
 const crc32 = require('buffer-crc32')
-const { mongo_host, torrentdb } = require('./config')
+const { torrentdb } = require('./config')
+require('dotenv').config()
 
 const punctuations = new RegExp(/。|，|,|！|…|!|《|》|<|>|\"|'|:|：|？|\?|、|\||“|”|‘|’|；|\\|—|_|=|（|）|·|\(|\)|　|\.|【|】|『|』|@|&|%|\^|\*|\+|\||<|>|~|`|\[|\]/, "g")
 const app = new Koa()
